@@ -117,16 +117,12 @@ def hashtag(request, tag = None):
         form = HashtagForm(instance=tag)
         return render(request, 'hashtag.html', {'form':form})
 #해시태그 검색
-def hashtag_search(request):
-    if request.method == 'POST':
-        keyword = request.POST.get('search_button') # keyword를 입력받음
-        tag = Tag.objects.filter(tag_content=keyword) # 해당 키워드를 가진 tag 클래스 오픈
-        post = Cashbook.objects.filter(tagging__in = tag).order_by('-pub_date')# 해당 태그를 가진 post 저장
-
-
-        return render(request, 'search_result.html', { 'keyword':keyword, 'post':post})
-    elif request.method == 'GET':
-        return redirect('/')
+def hashtag_search(request, id):
+    tagging = get_object_or_404(Tag, id=id)
+    tag = Tag.objects.filter(tag_content=tagging) 
+    post = Cashbook.objects.filter(tagging__in = tag).order_by('-pub_date')# 해당 태그를 가진 post 저장
+    return render(request, 'search_result.html', { 'tag':tag, 'post':post})
+    
 
 def likes(request, id):
     like_b = get_object_or_404(Cashbook, id=id)

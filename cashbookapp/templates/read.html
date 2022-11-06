@@ -13,6 +13,11 @@
         <h3>제목: <a href="{% url 'detail' cashbooks.id %}">{{cashbooks.title}}</a></h3>
         <p>작성일: {{cashbooks.pub_date}}</p>
         {% endfor %}
+        <br>
+        <br>
+{% for hashtag in cashbooks.tagging.all %} 
+    <p>해시태그:  {{ hashtag.tag_content }} </p>
+{% endfor %} 
     </form>
     <form method="POST" action="{% url 'hashtag_search' %}">
         {% csrf_token %}
