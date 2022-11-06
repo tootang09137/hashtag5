@@ -19,7 +19,8 @@ class Cashbook(models.Model):
     image = models.ImageField(upload_to = 'images/', blank =True, default='')
     likes = models.PositiveIntegerField(default=0, verbose_name='추천수')
     clicks = models.PositiveIntegerField(default=0, verbose_name='조회수') 
-    hashtags = models.ManyToManyField('Hashtag', blank = True)
+    tagging= models.ManyToManyField('Tag', blank = True, related_name='tagged')
+    hashtags_count = models.PositiveIntegerField(verbose_name='해시태그수', null=True)
     post_like = models.ManyToManyField(CustomUser, related_name='like_users', blank=True)
     like_count = models.PositiveIntegerField(default=0)
     def __str__(self):
@@ -38,8 +39,12 @@ class Cashbook(models.Model):
         else:
             return self.cleaned_data['content']
 
-class post(models.Model):
-    contentmanager
+class Tag(models.Model):
+    tag_content = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.tag_content
+
 
 class Comment(models.Model):
 
@@ -49,9 +54,3 @@ class Comment(models.Model):
     comment_writer = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE, blank=True, null = True, verbose_name='게시글 작성자')
     cashbook_id = models.ForeignKey(Cashbook, on_delete=models.CASCADE, related_name='comments', null=True)
     text = models.CharField(max_length=50)
-
-class Hashtag(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name

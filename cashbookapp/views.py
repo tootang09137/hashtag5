@@ -2,15 +2,10 @@ from pickle import TRUE
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CashbookForm, CommentForm, HashtagForm
 from django.utils import timezone
-from .models import Cashbook, Comment,  Hashtag
-from django.contrib.auth.forms import AuthenticationForm
-from account.models import CustomUser
+from .models import Cashbook, Comment, Tag
 from django.contrib.auth import authenticate
-import json
-from django.http import HttpResponse
-from django.core import serializers
-from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 
@@ -24,9 +19,21 @@ def write(request, cashbook = None):
             cashbook = form.save(commit=False)
             cashbook.pub_date = timezone.now()
             cashbook.save()
-            form.save_m2m()
-            return redirect('main')
+            #post=form.save_m2m()
+            #post.save()
+            #태그 처리
+            content = request.POST.get('posting_content')
+            c_list = content.split(' ')
 
+            for c in c_list:
+                if '#' in c:
+                    tag = Tag()
+                    tag.tag_content = c
+                    tag.save()
+
+                    cashbook_ = Cashbook.objects.get(pk=cashbook.pk)
+                    cashbook_.tagging.add(tag)
+            return redirect('main')
         else:
             context = {
                 'form':form,
@@ -35,7 +42,9 @@ def write(request, cashbook = None):
     else:
         form = CashbookForm(instance= cashbook)
         return render(request, 'write.html', {'form':form})
-             
+
+
+#해시태그 정렬        
 def read(request):
     cashbooks = Cashbook.objects
     return render(request, 'read.html', {'cashbooks':cashbooks})
@@ -91,22 +100,33 @@ def delete_comment(request, post_id, com_id):
     mycom.delete()
     return redirect('detail', post_id)
 
-def hashtag(request, hashtag = None):
+def hashtag(request, tag = None):
     if request.method == 'POST':
-        form = HashtagForm(request.POST, instance = hashtag)
+        form = HashtagForm(request.POST, instance = tag)
         if form.is_valid():
-            hashtag = form.save(commit = False)
-            if Hashtag.objects.filter(name=form.cleaned_data['name']):
+            tag = form.save(commit = False)
+            if Tag.objects.filter(tag_content=form.cleaned_data['tag_content']):
                 form = HashtagForm()
                 error_message = '이미 존재하는 해시태그입니다.'
                 return render(request, 'hashtag.html', {'form':form, 'error_message':error_message})
             else:
-                hashtag.name = form.cleaned_data['name']
-                hashtag.save()
+                tag.tag_content = form.cleaned_data['tag_content']
+                tag.save()
             return redirect('read')
     else:
-        form = HashtagForm(instance=hashtag)
+        form = HashtagForm(instance=tag)
         return render(request, 'hashtag.html', {'form':form})
+#해시태그 검색
+def hashtag_search(request):
+    if request.method == 'POST':
+        keyword = request.POST.get('search_button') # keyword를 입력받음
+        tag = Tag.objects.filter(tag_content=keyword) # 해당 키워드를 가진 tag 클래스 오픈
+        post = Cashbook.objects.filter(tagging__in = tag).order_by('-pub_date')# 해당 태그를 가진 post 저장
+
+
+        return render(request, 'search_result.html', { 'keyword':keyword, 'post':post})
+    elif request.method == 'GET':
+        return redirect('/')
 
 def likes(request, id):
     like_b = get_object_or_404(Cashbook, id=id)
@@ -119,3 +139,4 @@ def likes(request, id):
         like_b.like_count += 1
         like_b.save()
     return redirect('detail', like_b.id)
+

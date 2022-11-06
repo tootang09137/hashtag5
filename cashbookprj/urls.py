@@ -30,6 +30,8 @@ urlpatterns =[
     path('update_comment/<str:id>/<str:com_id>/', cashbookapp.views.update_comment, name='update_comment'),
     path('cashbookapp/delete_comment/<int:post_id>/<int:com_id>', cashbookapp.views.delete_comment, name='delete_comment'),
     path('hashtag/', cashbookapp.views.hashtag, name='hashtag'),
+    path('hashtag_search/', cashbookapp.views.hashtag_search, name="hashtag_search"),
     path('like/<str:id>/', cashbookapp.views.likes, name="likes"), #좋아요 url
     path('',include('account.urls')),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+

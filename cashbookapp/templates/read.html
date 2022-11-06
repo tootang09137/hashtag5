@@ -14,6 +14,10 @@
         <p>작성일: {{cashbooks.pub_date}}</p>
         {% endfor %}
     </form>
+    <form method="POST" action="{% url 'hashtag_search' %}">
+        {% csrf_token %}
+        <input type="" name="search_button" value="검색" style="background-color: rgb(242,242,242 green, blue);">
+    </form>
     
 </body>
 </html>

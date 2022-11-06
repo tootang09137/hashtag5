@@ -46,8 +46,8 @@
             {% endfor %}
     <br>
     <br>
-    {% for hashtag in cashbooks.hashtags.all %} 
-        <span> {{ hashtag.name }} </span>
+    {% for hashtag in cashbooks.tagging.all %} 
+        <span>해시태그:  {{ hashtag.tag_content }} </span>
     {% endfor %} 
     <br>
     <br>

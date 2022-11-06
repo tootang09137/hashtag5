@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 가계부 만들기</title>
+</head>
+
+<body>
+    <div class="content">
+        <div id="hashtag_posting">
+            {% if cashbook_ %}
+            <img id="photo" src="{{ cashbooks.image.url }}">
+            {% else %}
+            <img id="image">
+        {% endif %}
+        <div id=" hashtag">{{ keyword }}
+        </div>
+        <div id="hashtag_count">게시글 {{ cashbook_.count }}개</div>
+    </div>
+
+    <br>
+    <br>
+    <br>
+
+    <div id="title">{{ keyword }}과 관련된 게시물</div>
+
+    <div class="image_box">
+        {% for cashbooks in cashbooks.all %}
+        <img id="image_box" src="{{ cashbook.image.url }}">
+        {% endfor %}
+    </div>
+    </div>
+    <!-- <h2>검색결과</h2>
+
+    <div id="title">{{ keyword }}과 관련된 게시글</div>
+    {% for hashtag in cashbooks.hashtags.all %} 
+        <p> 해시태그:{{ hashtag.name }} </p>
+    {% endfor %}  -->
+</body>
+
+</html>
